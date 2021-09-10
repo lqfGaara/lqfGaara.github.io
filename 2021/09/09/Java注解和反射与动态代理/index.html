@@ -21,18 +21,18 @@
   </script>
 
   <meta name="description" content="##Java  注解和反射与动态代理 元注解 在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 metaannotation（元注解）。一般的，我们在定义自定义注解时，需要指定的元注解有两个 ：在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 &gt;metaannotation（元注解）。一般的，我们在定义自定义注解时，需要">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Java注解和反射与动态代理">
-<meta property="og:url" content="http://example.com/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/index.html">
+<meta property="og:url" content="http://example.com/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/index.html">
 <meta property="og:site_name" content="Alex&#39;s personal blog">
 <meta property="og:description" content="##Java  注解和反射与动态代理 元注解 在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 metaannotation（元注解）。一般的，我们在定义自定义注解时，需要指定的元注解有两个 ：在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 &gt;metaannotation（元注解）。一般的，我们在定义自定义注解时，需要">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-09-09T09:33:54.000Z">
-<meta property="article:modified_time" content="2021-09-10T06:43:32.710Z">
+<meta property="article:modified_time" content="2021-09-09T10:02:01.786Z">
 <meta property="article:author" content="Alex">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
+<link rel="canonical" href="http://example.com/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -40,13 +40,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>Java注解和反射与动态代理 | Alex's personal blog
-</title>
+  <title>Java注解和反射与动态代理 | Alex's personal blog</title>
   
 
 
@@ -143,33 +142,53 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
-          <div class="content page posts-expand">
+          <div class="content post posts-expand">
             
 
     
-    
-    
-    <div class="post-block" lang="zh-Hans">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">Java注解和反射与动态代理
-</h1>
-
-<div class="post-meta">
   
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
 
-</div>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="">
+    </span>
 
-</header>
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java注解和反射与动态代理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-09 17:33:54 / Modified: 18:02:01" itemprop="dateCreated datePublished" datetime="2021-09-09T17:33:54+08:00">2021-09-09</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-      
-      
-      <div class="post-body">
-          <p>##Java  注解和反射与动态代理</p>
+        <p>##Java  注解和反射与动态代理</p>
 <h4 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h4><blockquote>
 <p>在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 metaannotation（元注解）。一般的，我们在定义自定义注解时，需要指定的元注解有两个 ：<br>在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 &gt;metaannotation（元注解）。一般的，我们在定义自定义注解时，需要指定的元注解有两个 ：</p>
 </blockquote>
@@ -304,16 +323,32 @@
 </blockquote>
 <p><a target="_blank" rel="noopener" href="https://github.com/lqfGaara/ViewInject">基于java反射和注解简单实现butterknife</a></p>
 
-      </div>
-      
-      
-      
     </div>
-    
 
     
     
     
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/09/Java%E6%B3%9B%E5%9E%8B/" rel="prev" title="Java泛型">
+      <i class="fa fa-chevron-left"></i> Java泛型
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
 
 
           </div>

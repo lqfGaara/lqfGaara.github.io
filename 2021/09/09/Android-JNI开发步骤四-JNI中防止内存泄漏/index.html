@@ -21,9 +21,9 @@
   </script>
 
   <meta name="description" content="JNI 编程简介JNI，Java Native Interface，是 native code 的编程接口。JNI 使 Java 代码程序可以与 native code 交互——在 Java 程序中调用 native code；在 native code 中嵌入 Java 虚拟机调用 Java 的代码。JNI 编程在软件开发中运用广泛，其优势可以归结为以下几点：   利用 native code">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Android JNI开发步骤四(JNI内存泄漏)">
-<meta property="og:url" content="http://example.com/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E5%9B%9B/index.html">
+<meta property="og:url" content="http://example.com/2021/09/09/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E5%9B%9B-JNI%E4%B8%AD%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/index.html">
 <meta property="og:site_name" content="Alex&#39;s personal blog">
 <meta property="og:description" content="JNI 编程简介JNI，Java Native Interface，是 native code 的编程接口。JNI 使 Java 代码程序可以与 native code 交互——在 Java 程序中调用 native code；在 native code 中嵌入 Java 虚拟机调用 Java 的代码。JNI 编程在软件开发中运用广泛，其优势可以归结为以下几点：   利用 native code">
 <meta property="og:locale">
@@ -32,12 +32,12 @@
 <meta property="og:image" content="http://www.ibm.com/developerworks/cn/java/j-lo-jnileak/image007.jpg">
 <meta property="og:image" content="http://www.ibm.com/developerworks/cn/java/j-lo-jnileak/image009.jpg">
 <meta property="article:published_time" content="2021-09-09T09:11:13.000Z">
-<meta property="article:modified_time" content="2021-09-10T06:40:58.708Z">
+<meta property="article:modified_time" content="2021-09-09T10:02:01.781Z">
 <meta property="article:author" content="Alex">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://www.ibm.com/developerworks/cn/java/j-lo-jnileak/image003.jpg">
 
-<link rel="canonical" href="http://example.com/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E5%9B%9B/">
+<link rel="canonical" href="http://example.com/2021/09/09/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E5%9B%9B-JNI%E4%B8%AD%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/">
 
 
 <script id="page-configurations">
@@ -45,13 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>Android JNI开发步骤四(JNI内存泄漏) | Alex's personal blog
-</title>
+  <title>Android JNI开发步骤四(JNI内存泄漏) | Alex's personal blog</title>
   
 
 
@@ -148,33 +147,53 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
-          <div class="content page posts-expand">
+          <div class="content post posts-expand">
             
 
     
-    
-    
-    <div class="post-block" lang="zh-Hans">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">Android JNI开发步骤四(JNI内存泄漏)
-</h1>
-
-<div class="post-meta">
   
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/09/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E5%9B%9B-JNI%E4%B8%AD%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/">
 
-</div>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="">
+    </span>
 
-</header>
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android JNI开发步骤四(JNI内存泄漏)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-09 17:11:13 / Modified: 18:02:01" itemprop="dateCreated datePublished" datetime="2021-09-09T17:11:13+08:00">2021-09-09</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-      
-      
-      <div class="post-body">
-          <h4 id="JNI-编程简介"><a href="#JNI-编程简介" class="headerlink" title="JNI 编程简介"></a>JNI 编程简介</h4><p>JNI，Java Native Interface，是 native code 的编程接口。JNI 使 Java 代码程序可以与 native code 交互——在 Java 程序中调用 native code；在 native code 中嵌入 Java 虚拟机调用 Java 的代码。<br>JNI 编程在软件开发中运用广泛，其优势可以归结为以下几点：</p>
+        <h4 id="JNI-编程简介"><a href="#JNI-编程简介" class="headerlink" title="JNI 编程简介"></a>JNI 编程简介</h4><p>JNI，Java Native Interface，是 native code 的编程接口。JNI 使 Java 代码程序可以与 native code 交互——在 Java 程序中调用 native code；在 native code 中嵌入 Java 虚拟机调用 Java 的代码。<br>JNI 编程在软件开发中运用广泛，其优势可以归结为以下几点：</p>
 <blockquote>
 <ol>
 <li>利用 native code 的平台相关性，在平台相关的编程中彰显优势。</li>
@@ -235,16 +254,35 @@
 </blockquote>
 <h5 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h5><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/renxianzuo/article/details/6824716">jni 内存泄露</a></p>
 
-      </div>
-      
-      
-      
     </div>
-    
 
     
     
     
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/04/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%89-%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%92/" rel="prev" title="Android JNI开发步骤三(数据传递)">
+      <i class="fa fa-chevron-left"></i> Android JNI开发步骤三(数据传递)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/09/Android%E7%BC%96%E8%AF%91%E6%8F%92%E6%A1%A9/" rel="next" title="Android编译插桩">
+      Android编译插桩 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
 
 
           </div>

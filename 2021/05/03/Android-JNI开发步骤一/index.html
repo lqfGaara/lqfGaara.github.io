@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1. JNI中获取JavaVM和 JNIEnvJavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。使用JNI_OnLoad方法，这个方法需要自己实现。如下 12345678910111213jint JNI_OnLoad(JavaVM *v">
+  <meta name="description" content="1. JNI中获取JavaVM和 JNIEnvJavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。使用JNI_OnLoad方法，这个方法需要自己实现。如下 12345678910111213jint JNI_OnLoad(JavaVM *vm,v">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android JNI开发步骤一">
 <meta property="og:url" content="http://example.com/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/index.html">
 <meta property="og:site_name" content="Alex&#39;s personal blog">
-<meta property="og:description" content="1. JNI中获取JavaVM和 JNIEnvJavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。使用JNI_OnLoad方法，这个方法需要自己实现。如下 12345678910111213jint JNI_OnLoad(JavaVM *v">
+<meta property="og:description" content="1. JNI中获取JavaVM和 JNIEnvJavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。使用JNI_OnLoad方法，这个方法需要自己实现。如下 12345678910111213jint JNI_OnLoad(JavaVM *vm,v">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-05-03T13:57:17.000Z">
-<meta property="article:modified_time" content="2021-09-16T06:57:39.650Z">
+<meta property="article:modified_time" content="2021-09-16T07:06:34.807Z">
 <meta property="article:author" content="Alex">
 <meta name="twitter:card" content="summary">
 
@@ -180,7 +180,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-16 14:57:39" itemprop="dateModified" datetime="2021-09-16T14:57:39+08:00">2021-09-16</time>
+                <time title="Modified: 2021-09-16 15:06:34" itemprop="dateModified" datetime="2021-09-16T15:06:34+08:00">2021-09-16</time>
               </span>
 
           
@@ -194,15 +194,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <span id="more"></span> 
-
-<h4 id="1-JNI中获取JavaVM和-JNIEnv"><a href="#1-JNI中获取JavaVM和-JNIEnv" class="headerlink" title="1. JNI中获取JavaVM和 JNIEnv"></a>1. JNI中获取JavaVM和 JNIEnv</h4><p>JavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。<br>JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。<br>使用JNI_OnLoad方法，这个方法需要自己实现。如下</p>
+        <h4 id="1-JNI中获取JavaVM和-JNIEnv"><a href="#1-JNI中获取JavaVM和-JNIEnv" class="headerlink" title="1. JNI中获取JavaVM和 JNIEnv"></a>1. JNI中获取JavaVM和 JNIEnv</h4><p>JavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。<br>JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。<br>使用JNI_OnLoad方法，这个方法需要自己实现。如下</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">jint JNI_OnLoad(JavaVM *vm,void *reserved)&#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 1&quot;);</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    int result = -1;</span><br><span class="line">    if (vm-&gt;GetEnv(reinterpret_cast&lt;void **&gt;(&amp;env), JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 2&quot;);</span><br><span class="line">        return JNI_ERR;</span><br><span class="line">    &#125;</span><br><span class="line">    result = register_method(env);//动态注册本地方法</span><br><span class="line">    savedVm = vm;//保存JavaVM ，供其他地方使用。</span><br><span class="line">    LOGE(&quot;JNI_Onload in 3 , result is %d&quot;, result);</span><br><span class="line">    return JNI_VERSION_1_6;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这个方法是在加载相应的.so包的时候，系统主动调用的，即：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">        System.loadLibrary(&quot;native-lib&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>这句代码调用时，JNI_OnLoad方法就会被调用。<br>每一个.so文件中，只能包含一个JNI_OnLoad方法，也就是在当前.so包含的文件中，只能有一个.c文件中实现这个JNI_OnLoad方法。<br>如上面的做法，我们可以在头文件中声明extern JavaVM *savedVm;，然后其他文件include这个头文件后，就可以使用这个JavaVM。</p>
-<!-- more -->
+<span id="more"></span>
+
 
 <p>很多情况下，我们需要在其他文件中的一个多线程中使用JNIEnv，比如在线程中使用FindClass方法，这个时候，我们就可以通过JavaVM对象来获取JNIEnv，如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">JNIEnv *env ;</span><br><span class="line">if (savedVm-&gt;AttachCurrentThread(&amp;env, 0) != 0)</span><br><span class="line">&#123;</span><br><span class="line">	LOGI(&quot;Failed to attach current thread&quot;);</span><br><span class="line">	return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

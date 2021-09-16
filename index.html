@@ -630,7 +630,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-16 14:57:07" itemprop="dateModified" datetime="2021-09-16T14:57:07+08:00">2021-09-16</time>
+                <time title="Modified: 2021-09-16 15:06:20" itemprop="dateModified" datetime="2021-09-16T15:06:20+08:00">2021-09-16</time>
               </span>
 
           
@@ -644,8 +644,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <span id="more"></span>
-<p>首先JNI中的数据类型有基本数据类型和引用类型：<br>基本数据类型为：</p>
+          <p>首先JNI中的数据类型有基本数据类型和引用类型：<br>基本数据类型为：</p>
 <table>
 <thead>
 <tr>
@@ -700,29 +699,14 @@
 <td align="center">void</td>
 </tr>
 </tbody></table>
-<!-- more -->
-
-<h4 id="1-字符串传递"><a href="#1-字符串传递" class="headerlink" title="1. 字符串传递"></a>1. 字符串传递</h4><h5 id="从Java传递到native代码"><a href="#从Java传递到native代码" class="headerlink" title="从Java传递到native代码"></a>从Java传递到native代码</h5><p>首先，Java代码：</p>
-<pre><code>public native String sumStr(String strA,String strB);  
-</code></pre>
-<p>然后，native方法如下:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT jstring JNICALL Java_com_example_mystore_MainActivity_sumStr(  </span><br><span class="line">        JNIEnv * pJNIEnv, jobject pThis, jstring a, jstring b) &#123;  </span><br><span class="line">    //将Java层的字符串转成char*类型的</span><br><span class="line">    const char* aString = (*pJNIEnv)-&gt;GetStringUTFChars(pJNIEnv, a, 0);  </span><br><span class="line">    const char* bString = (*pJNIEnv)-&gt;GetStringUTFChars(pJNIEnv, b, 0);  </span><br><span class="line">    //之后就可以进行相应的处理</span><br><span class="line">    char* buf[1024];  </span><br><span class="line">    strcpy(buf, aString);  </span><br><span class="line">    strcat(buf, bString);  </span><br><span class="line">    (*pJNIEnv)-&gt;ReleaseStringUTFChars(pJNIEnv, a, aString);  </span><br><span class="line">    (*pJNIEnv)-&gt;ReleaseStringUTFChars(pJNIEnv, b, bString);  </span><br><span class="line">    return (*pJNIEnv)-&gt;NewStringUTF(pJNIEnv, buf);  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
-<p>由于java程序中传过去的String对象在本地方法中对应的是jstring类型，jstring类型和c中的char<em>不同，所以如果你直接当做 char</em>使用的话，就会出错。因此在使用之前需要将jstring转换成为c/c++中的char*，这里使用JNIEnv的方法转换。 </p>
-<h5 id="从native传递字符串到java"><a href="#从native传递字符串到java" class="headerlink" title="从native传递字符串到java"></a>从native传递字符串到java</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//处理字符串追加  </span><br><span class="line">JNIEXPORT jstring JNICALL Java_cn_itcast_ndk3_DataProvider_sayHelloInC  </span><br><span class="line">  (JNIEnv * env, jobject obj, jstring str)&#123;  </span><br><span class="line">    char* newstr = &quot;native string&quot;;   </span><br><span class="line">    return (*env)-&gt;NewStringUTF(env, newstr);  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
-
-<h4 id="2-传递基本类型数据"><a href="#2-传递基本类型数据" class="headerlink" title="2.传递基本类型数据"></a>2.传递基本类型数据</h4><p>很多情况下，比如图片数据处理，我们都需要将图像数据以数据的形式，传递到native代码中进行相应的处理，然后在传递回java层。</p>
-<h5 id="Java层传递到native层"><a href="#Java层传递到native层" class="headerlink" title="Java层传递到native层"></a>Java层传递到native层</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">//处理Java传过来的char[]</span><br><span class="line"> jcharArray test_chararray (JNIEnv * env, jclass, jcharArray j_char_array)&#123; </span><br><span class="line">//首先计算数组长度 </span><br><span class="line">    jsize j_char_array_size = env-&gt;GetArrayLength(j_char_array);  </span><br><span class="line">    //获取数据第一个数据的地址</span><br><span class="line">    jchar* j_c = env-&gt;GetCharArrayElements(j_char_array, 0);  </span><br><span class="line">    //打印</span><br><span class="line">      for (int i = 0; i &lt; j_char_array_size; i++)&#123;  </span><br><span class="line">        __android_log_print(ANDROID_LOG_INFO, COM_THINKING_J_DATA_TOOLS_LOG_TITLE, &quot;array index %i is %i from %x&quot;, i, *(j_c + i), (j_c + i));  </span><br><span class="line">        if (*(j_c + i) &gt;= 97 &amp;&amp; *(j_c + i) &lt;= 122)&#123;  </span><br><span class="line">            *(j_c + i) -= 32;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125; </span><br><span class="line">    //接下来是在本地接收</span><br><span class="line">    //先创建一个相同大小的数组 </span><br><span class="line">    jcharArray result_array = env-&gt;NewCharArray(j_char_array_size);</span><br><span class="line">    //获取新创建的的数组的第一个数据的地址  ，其实也就是相当于获取到了全部的数据</span><br><span class="line">    //第一个是数组，第二个是数组里面开始的元素</span><br><span class="line">    jchar * result = env-&gt;GetCharArrayElements(result_array, 0);  </span><br><span class="line">    if (j_char_array_size &gt; 0)&#123;  </span><br><span class="line">    //复制到新的数据中，第一个参数是目的数组，第二个是源数组，第三个是size</span><br><span class="line">        memcpy(result, j_c, j_char_array_size*sizeof(jchar));  </span><br><span class="line">    &#125;  </span><br><span class="line">    //释放</span><br><span class="line">    env-&gt;ReleaseCharArrayElements(j_char_array, j_c, 0);  </span><br><span class="line">    env-&gt;ReleaseCharArrayElements(result_array, result, 0);  </span><br><span class="line">    return result_array;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">//另一个处理方法,处理Java过来的int[]</span><br><span class="line">jint IntArray_sumArray(JNIEnv *env, jobject obj, jintArray arr)</span><br><span class="line"> &#123;</span><br><span class="line">     jint buf[10];</span><br><span class="line">     jint i, sum = 0;</span><br><span class="line">     //从0开始复制长度为10的数据从arr到buf中</span><br><span class="line">     (*env)-&gt;GetIntArrayRegion(env, arr, 0, 10, buf);</span><br><span class="line">     for (i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">         sum += buf[i];</span><br><span class="line">     &#125;</span><br><span class="line">     return sum;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//处理Java传过来的byte[]</span><br><span class="line">jboolean  processByteArray(JNIEnv *env, jobject object,jbyteArray passwd,jint len)</span><br><span class="line">&#123;</span><br><span class="line">   jbyte *bytes;</span><br><span class="line">   unsigned char *buf;</span><br><span class="line">   int i;</span><br><span class="line">    //从jbytearray获取数据到jbyte*</span><br><span class="line">   bytes = env-&gt;GetByteArrayElements(passwd,NULL);</span><br><span class="line">   if(bytes == NULL) &#123;</span><br><span class="line">      return false;</span><br><span class="line">   &#125;</span><br><span class="line">   buf =(unsigned char *)calloc(len,sizeof(char));</span><br><span class="line">   if(buf == NULL)</span><br><span class="line">   &#123;</span><br><span class="line">      return false;</span><br><span class="line">   &#125;</span><br><span class="line">   for(i=0;i&lt;len;i++)</span><br><span class="line">   &#123;</span><br><span class="line">      *(buf+i)=(unsigned char)(*(bytes+i));</span><br><span class="line">   &#125;</span><br><span class="line">    //释放资源</span><br><span class="line">   env-&gt;ReleaseByteArrayElements(passwd,bytes,0);</span><br><span class="line">   __android_log_write(ANDROID_LOG_ERROR,&quot;TAG&quot;,(char*)buf);</span><br><span class="line">   free(buf);</span><br><span class="line">   return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>我们可以看到，native中有两种方法可以接收Java传过来的数组：一个 GetByteArrayRegion，另一个是 GetByteArrayElements ，前者是进行值拷贝，将Java端数组的数据拷贝到本地的数组中，后者是指针的形式，将本地的数组指针直接指向Java端的数组地址，其实本质上是JVM在堆上分配的这个数组对象上增加一个引用计数，保证垃圾回收的时候不要释放，从而交给本地的指针使用，使用完毕后指针一定要记得通过ReleaseByteArrayElements进行释放，否则会产生内存泄露</strong></p>
-<h5 id="native返回数组值Java层"><a href="#native返回数组值Java层" class="headerlink" title="native返回数组值Java层"></a>native返回数组值Java层</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//传递jintArray 到java</span><br><span class="line">JNIEXPORT jintArray JNICALL getIntArray(JNIEnv * pJNIEnv, jobject pThis) &#123;  </span><br><span class="line">    //  先创建  </span><br><span class="line">    jintArray lJavaArray = (*pJNIEnv)-&gt;NewIntArray(pJNIEnv, 4);  </span><br><span class="line">    if (lJavaArray == NULL) &#123;  </span><br><span class="line">        return NULL;  </span><br><span class="line">    &#125;  </span><br><span class="line">    int target[] = &#123; 2, 4, 6, 8 &#125;;  </span><br><span class="line">    //从target复制从0开始长度为4的数组，到lJavaArray中</span><br><span class="line">    (*pJNIEnv)-&gt;SetIntArrayRegion(pJNIEnv, lJavaArray, 0, 4, target);  </span><br><span class="line">    return lJavaArray;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">//向Java层返回Byte数组</span><br><span class="line">JNIEXPORT jintArray JNICALL setByteArray(JNIEnv * pJNIEnv, jobject pThis) &#123;  </span><br><span class="line">    unsigned char buffer[10];</span><br><span class="line">    jbytearray array = env-&gt;NewByteArray(10);//创建一个新的bytearray，长度为10</span><br><span class="line">    for(int i = 0;i &lt; 10; i++)&#123;</span><br><span class="line">        buffer[i] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    //从buffer复制从0开始长度为4的数组，到array中</span><br><span class="line">    env-&gt;SetByteArrayRegion(array,0,10,buffer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3-JNI和Java共享内存空间"><a href="#3-JNI和Java共享内存空间" class="headerlink" title="3.JNI和Java共享内存空间"></a>3.JNI和Java共享内存空间</h4><p>首先，对上面的几种类型做一些总结： </p>
-<h5 id="1-Java传到JNI，使用GetByteArrayRegion的方式："><a href="#1-Java传到JNI，使用GetByteArrayRegion的方式：" class="headerlink" title="1. Java传到JNI，使用GetByteArrayRegion的方式："></a>1. Java传到JNI，使用GetByteArrayRegion的方式：</h5><p>该方法的本质是将Java端数组数据拷贝到本地的数组中，所以在JNI对数据修改后Java端的数据并没有改变。 使用GetPrimitiveArrayCritical。<br>GetPrimitiveArrayCritical 表面上可以得到底层数据指针，在JNI层修改数组时Java层的数据也会变。But，如果只使用GetPrimitiveArrayCritical获取数据，程序运行一段时间内存会crash。所以，使用GetPrimitiveArrayCritical时必须使用ReleasePrimitiveArrayCritical ，通过测试发现当数据量大时执行ReleasePrimitiveArrayCritical会非常耗时。 </p>
-<h5 id="2-JNI传到Java："><a href="#2-JNI传到Java：" class="headerlink" title="2. JNI传到Java："></a>2. JNI传到Java：</h5><p>把Jni层的数组传递到Java层，一般有两种方法，一种是通过native函数的返回值来传递，另一种是通过jni层回调java层的函数来传递，后者多用于jni的线程中或是数据量较大的情况。无论哪种方法，都离不开 SetByteArrayRegion 函数，该函数将本地的数组数据拷贝到了 Java 端的数组中。<br><strong>请注意，上面的方式都涉及到内存复制，根据实战经验，在Android系统中，一旦数据量变大，拷贝一次内存将非常耗时。所以上述方式在追求效率时不推荐使用。解决的方法可以尝试让JAVA层和JNI共享内存的方式。最后找到了两种方式。</strong></p>
-<h5 id="使用共享内存的方式"><a href="#使用共享内存的方式" class="headerlink" title="使用共享内存的方式"></a>使用共享内存的方式</h5><h5 id="1-使用GetByteArrayElements方式"><a href="#1-使用GetByteArrayElements方式" class="headerlink" title="1. 使用GetByteArrayElements方式"></a>1. 使用GetByteArrayElements方式</h5><p>该方式是指针的形式，将本地的数组指针直接指向Java端的数组地址，其实本质上是JVM在堆上分配的这个数组对象上增加一个引用计数，保证垃圾回收的时候不要释放，从而交给本地的指针使用，使用完毕后指针一定要记得通过ReleaseByteArrayElements进行释放，否则会产生内存泄露。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">unsigned char* psrcImg = (unsigned char*)(env-&gt;GetByteArrayElements(srcImg,0));  </span><br><span class="line">unsigned char* pBufferI420 = (unsigned char*) (env-&gt;GetByteArrayElements(dstImg,0));</span><br><span class="line"></span><br><span class="line">if (psrcImg == NULL || pBufferI420 == NULL)</span><br><span class="line">&#123;</span><br><span class="line">  return -1;</span><br><span class="line">&#125;</span><br><span class="line">env-&gt;ReleaseByteArrayElements(srcImg,(jbyte*)psrcImg,0);</span><br><span class="line">env-&gt;ReleaseByteArrayElements(dstImg,(jbyte*)pBufferI420,0);</span><br></pre></td></tr></table></figure>
-<h5 id="2-使用Direct-Buffer-方式传递"><a href="#2-使用Direct-Buffer-方式传递" class="headerlink" title="2. 使用Direct Buffer 方式传递"></a>2. 使用Direct Buffer 方式传递</h5><p>Java和Jni层的数组传递还有一个比较重要的方式，就是通过Direct Buffer来传递，这种方式类似于在堆上创建创建了一个Java和Jni层共享的整块内存区域，无论是Java层或者Jni层均可访问这块内存，并且Java端与Jni端同步变化，由于是采用的是共享内存的方式，因此相比于普通的数组传递，效率更高，但是由于构造/析构/维护这块共享内存的代价比较大，所以小数据量的数组建议还是采用上述方式，Direct Buffer方式更适合长期使用频繁访问的大块内存的共享。具体可使用GetDirectBufferAddress获得共享的内存地址。<br>比如在涉及到RTSP获取预览图像数据的时候，需要一帧一帧的发送到Java，就可以使用这种方法：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JNIEnv *env ;</span><br><span class="line">if (savedVm-&gt;AttachCurrentThread(&amp;env, 0) != 0)</span><br><span class="line">&#123;</span><br><span class="line">    LOGI(&quot;Failed to attach current thread&quot;);</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br><span class="line">//第一个参数是数据，类型为void*，第二个为数据大小</span><br><span class="line">jobject buf = env-&gt;NewDirectByteBuffer(frame_mjpeg-&gt;data, frame_mjpeg-&gt;actual_bytes);</span><br><span class="line">//调起Java的方法，作为参数传入</span><br><span class="line">env-&gt;CallVoidMethod(mObject, on_new_frame_method_id,buf);</span><br><span class="line">env-&gt;ExceptionClear();</span><br><span class="line">env-&gt;DeleteLocalRef(buf);</span><br><span class="line">savedVm-&gt;DetachCurrentThread();</span><br></pre></td></tr></table></figure>
-<p><em><strong>在JNI层，尽量避免使用内存拷贝。</strong></em></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/04/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%89-%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%92/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -772,7 +756,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-16 14:57:39" itemprop="dateModified" datetime="2021-09-16T14:57:39+08:00">2021-09-16</time>
+                <time title="Modified: 2021-09-16 15:06:34" itemprop="dateModified" datetime="2021-09-16T15:06:34+08:00">2021-09-16</time>
               </span>
 
           
@@ -786,164 +770,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <span id="more"></span> 
-
-<h4 id="1-JNI中获取JavaVM和-JNIEnv"><a href="#1-JNI中获取JavaVM和-JNIEnv" class="headerlink" title="1. JNI中获取JavaVM和 JNIEnv"></a>1. JNI中获取JavaVM和 JNIEnv</h4><p>JavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。<br>JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。<br>使用JNI_OnLoad方法，这个方法需要自己实现。如下</p>
+          <h4 id="1-JNI中获取JavaVM和-JNIEnv"><a href="#1-JNI中获取JavaVM和-JNIEnv" class="headerlink" title="1. JNI中获取JavaVM和 JNIEnv"></a>1. JNI中获取JavaVM和 JNIEnv</h4><p>JavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。<br>JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。<br>使用JNI_OnLoad方法，这个方法需要自己实现。如下</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">jint JNI_OnLoad(JavaVM *vm,void *reserved)&#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 1&quot;);</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    int result = -1;</span><br><span class="line">    if (vm-&gt;GetEnv(reinterpret_cast&lt;void **&gt;(&amp;env), JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 2&quot;);</span><br><span class="line">        return JNI_ERR;</span><br><span class="line">    &#125;</span><br><span class="line">    result = register_method(env);//动态注册本地方法</span><br><span class="line">    savedVm = vm;//保存JavaVM ，供其他地方使用。</span><br><span class="line">    LOGE(&quot;JNI_Onload in 3 , result is %d&quot;, result);</span><br><span class="line">    return JNI_VERSION_1_6;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这个方法是在加载相应的.so包的时候，系统主动调用的，即：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">        System.loadLibrary(&quot;native-lib&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>这句代码调用时，JNI_OnLoad方法就会被调用。<br>每一个.so文件中，只能包含一个JNI_OnLoad方法，也就是在当前.so包含的文件中，只能有一个.c文件中实现这个JNI_OnLoad方法。<br>如上面的做法，我们可以在头文件中声明extern JavaVM *savedVm;，然后其他文件include这个头文件后，就可以使用这个JavaVM。</p>
-<!-- more -->
-
-<p>很多情况下，我们需要在其他文件中的一个多线程中使用JNIEnv，比如在线程中使用FindClass方法，这个时候，我们就可以通过JavaVM对象来获取JNIEnv，如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">JNIEnv *env ;</span><br><span class="line">if (savedVm-&gt;AttachCurrentThread(&amp;env, 0) != 0)</span><br><span class="line">&#123;</span><br><span class="line">	LOGI(&quot;Failed to attach current thread&quot;);</span><br><span class="line">	return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>AttachCurrentThread表示当前线程与JVM进行关联，这样才能获取到JNIEnv对象；<br>这样我们就可以在多线程中使用JNIEnv对象，然后使用FindClass方法。当然，使用完了需要解除当前线程和虚拟机的关联，savedVm-&gt;DetachCurrentThread();，不然会报异常。<br>还可以在应用退出时，卸载当前虚拟机.</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jint DestroyJavaVM(JavaVM* vm);</span><br></pre></td></tr></table></figure>
-<h4 id="2、动态注册JNI方法"><a href="#2、动态注册JNI方法" class="headerlink" title="2、动态注册JNI方法"></a>2、动态注册JNI方法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">jint JNI_OnLoad(JavaVM *vm,void *reserved)&#123;</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    int result = -1;</span><br><span class="line">    if (vm-&gt;GetEnv(reinterpret_cast&lt;void **&gt;(&amp;env), JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 2&quot;);</span><br><span class="line">        return JNI_ERR;</span><br><span class="line">    &#125;</span><br><span class="line">    **result = register_method(env);//动态注册本地方法**</span><br><span class="line">    savedVm = vm;//保存JavaVM ，供其他地方使用。</span><br><span class="line">    LOGE(&quot;JNI_Onload in 3 , result is %d&quot;, result);</span><br><span class="line">    return JNI_VERSION_1_6;</span><br><span class="line">&#125;</span><br><span class="line">//这是本地方法的一个集合</span><br><span class="line">JNINativeMethod methods[] = &#123;</span><br><span class="line">    &#123;&quot;helloMethod&quot;,&quot;(Ljava/lang/String;)Ljava/lang/String;&quot;,(void*)helloMethod&#125;,</span><br><span class="line">    &#123;&quot;nativeCallJava&quot;,&quot;()V&quot;,(void*)nativeCallJava&#125;,</span><br><span class="line">    &#123;&quot;nativeCallJavaInThread&quot;,&quot;()V&quot;,(void*)nativeCallJavaInThread&#125;</span><br><span class="line">&#125;;</span><br><span class="line">jint register_method(JNIEnv *env)&#123;</span><br><span class="line">//开始注册方法</span><br><span class="line">    int result = registerNativeMethods(env,&quot;com/xxxx/jni/MainActivity&quot;,methods, sizeof(methods) / sizeof(methods[0]));</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">jint registerNativeMethods(JNIEnv* env, const char *class_name, JNINativeMethod *methods, int num_methods) &#123;</span><br><span class="line">    int result = 0;</span><br><span class="line">    //先根据类名找到类，这个类一般是用来存放所有的native方法</span><br><span class="line">    jclass clazz = env-&gt;FindClass(class_name);</span><br><span class="line">    if(clazz == NULL)&#123;</span><br><span class="line">        return JNI_FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    //调用JNI方法，注册方法</span><br><span class="line">    result = env-&gt;RegisterNatives(clazz, methods, num_methods);</span><br><span class="line">    if(result &lt; 0)&#123;</span><br><span class="line">        return JNI_FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>JNINativeMethod结构体如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;  </span><br><span class="line">const char* name;  </span><br><span class="line">const char* signature;  </span><br><span class="line">void* fnPtr;  </span><br><span class="line">&#125; JNINativeMethod;  </span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>第一个变量name是Java中函数的名字。<br>第二个变量signature，用字符串是描述了Java中函数的参数和返回值<br>第三个变量fnPtr是函数指针，指向native函数。前面都要接 (void *)<br>第一个变量与第三个变量是对应的，一个是java层方法名，对应着第三个参数&gt;的native方法名字<br>关于第二个变量，表示的参数和返回值表示，可以看如下：</p>
-</blockquote>
-<h5 id="基本数据类型的转换"><a href="#基本数据类型的转换" class="headerlink" title="基本数据类型的转换"></a>基本数据类型的转换</h5><table>
-<thead>
-<tr>
-<th align="center">java</th>
-<th align="center">native</th>
-<th align="center">signature</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">char</td>
-<td align="center">jchar</td>
-<td align="center">C</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">jbyte</td>
-<td align="center">B</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">jshort</td>
-<td align="center">S</td>
-</tr>
-<tr>
-<td align="center">int</td>
-<td align="center">jint</td>
-<td align="center">I</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">jlong</td>
-<td align="center">L</td>
-</tr>
-<tr>
-<td align="center">float</td>
-<td align="center">jfloat</td>
-<td align="center">F</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">jdouble</td>
-<td align="center">D</td>
-</tr>
-<tr>
-<td align="center">boolean</td>
-<td align="center">jboolean</td>
-<td align="center">Z</td>
-</tr>
-<tr>
-<td align="center">void</td>
-<td align="center">void</td>
-<td align="center">V</td>
-</tr>
-</tbody></table>
-<h5 id="引用数据类型的转换"><a href="#引用数据类型的转换" class="headerlink" title="引用数据类型的转换"></a>引用数据类型的转换</h5><table>
-<thead>
-<tr>
-<th align="center">java</th>
-<th align="center">native</th>
-<th align="center">signature</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">所有对象</td>
-<td align="center">jobject</td>
-<td align="center">L+classname +;</td>
-</tr>
-<tr>
-<td align="center">Class</td>
-<td align="center">jclass</td>
-<td align="center">Ljava/lang/Class;</td>
-</tr>
-<tr>
-<td align="center">String</td>
-<td align="center">jstring</td>
-<td align="center">Ljava/lang/String;</td>
-</tr>
-<tr>
-<td align="center">Throwable</td>
-<td align="center">jthrowable</td>
-<td align="center">Ljava/lang/Throwable;</td>
-</tr>
-<tr>
-<td align="center">Object[]</td>
-<td align="center">jobjectArray</td>
-<td align="center">[L+classname +;</td>
-</tr>
-<tr>
-<td align="center">byte[]</td>
-<td align="center">jbyteArray</td>
-<td align="center">[B</td>
-</tr>
-<tr>
-<td align="center">char[]</td>
-<td align="center">jcharArray</td>
-<td align="center">[C</td>
-</tr>
-<tr>
-<td align="center">double[]</td>
-<td align="center">jdoubleArray</td>
-<td align="center">[D</td>
-</tr>
-<tr>
-<td align="center">float[]</td>
-<td align="center">jfloatArray</td>
-<td align="center">[F</td>
-</tr>
-<tr>
-<td align="center">int[]</td>
-<td align="center">jintArray</td>
-<td align="center">[I</td>
-</tr>
-<tr>
-<td align="center">short[]</td>
-<td align="center">jshortArray</td>
-<td align="center">[S</td>
-</tr>
-<tr>
-<td align="center">long[]</td>
-<td align="center">jlongArray</td>
-<td align="center">[J</td>
-</tr>
-<tr>
-<td align="center">boolean[]</td>
-<td align="center">jbooleanArray</td>
-<td align="center">[Z</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>从上表可一看出，数组的JNI层数据类型需要以“Array”结尾，签名格式的开头都会有“[”。除了数组以外，其他的引用数据类型的签名格式都会以“;”结尾。</p>
-</blockquote>
-<p>当然，我们也可以在应用退出时卸载本地方法。JNI_OnLoad方法是在动态库被加载时调用，而JNI_OnUnload则是在本地库被卸载时调用。所以这两个函数就是一个本地库最重要的两个生命周期方法。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int unRegisterNative(JNIEnv *env) &#123;</span><br><span class="line">    jclass clazz = env-&gt;FindClass(“类名”);</span><br><span class="line">    if (clazz == NULL) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    return env-&gt;UnregisterNatives(clazz) ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void JNI_OnUnload(JavaVM *vm, void *reserved) &#123;</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    jint result = -1;</span><br><span class="line">    if (vm-&gt;GetEnv((void **) &amp;env, JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    int ret = unRegisterNative(env);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -993,7 +833,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-16 14:56:53" itemprop="dateModified" datetime="2021-09-16T14:56:53+08:00">2021-09-16</time>
+                <time title="Modified: 2021-09-16 15:06:06" itemprop="dateModified" datetime="2021-09-16T15:06:06+08:00">2021-09-16</time>
               </span>
 
           
@@ -1007,19 +847,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <span id="more"></span> 
-
-<p>在JNI代码中获取到了我们想要的值，需要返回到Java层，简单的情况下可以使用return某个值来实现。但是复杂情况下，我们需要不断地获取JNI中返回的值，我们就可以在JNI中主动去找Java中的方法，然后调用，并把JNI中的值作为Java方法的参数传入。如下：</p>
+          <p>在JNI代码中获取到了我们想要的值，需要返回到Java层，简单的情况下可以使用return某个值来实现。但是复杂情况下，我们需要不断地获取JNI中返回的值，我们就可以在JNI中主动去找Java中的方法，然后调用，并把JNI中的值作为Java方法的参数传入。如下：</p>
 <p>//native方法将调用Java方法</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT void JNICALL nativeCallJava(JNIEnv *env, jobject thiz)&#123;</span><br><span class="line">    object_global = (jobject)env-&gt;NewGlobalRef(thiz);</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    //先获取JNIEnv</span><br><span class="line">    if (savedVm-&gt;GetEnv(reinterpret_cast&lt;void **&gt;(&amp;env), JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">        env = NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    //再通过FindClass来加载当前需要的类</span><br><span class="line">    jclass clazz = env-&gt;FindClass(&quot;com/XXXX/jni/MainActivity&quot;);</span><br><span class="line">    //获取当前类中的静态方法</span><br><span class="line">    jmethodID method1 = env-&gt;GetStaticMethodID(clazz,&quot;nativeCall&quot;,&quot;(Ljava/lang/String;)V&quot;);</span><br><span class="line">    jstring result = env-&gt;NewStringUTF(&quot;aaaaaaaaa&quot;);//字符串</span><br><span class="line">    env-&gt;CallStaticVoidMethod (clazz, method1,result);//调用静态方法</span><br><span class="line">    //获取普通成员方法</span><br><span class="line">    jmethodID method2 = env-&gt;GetMethodID(clazz,&quot;nativeCall_nonStatic&quot;,&quot;(Ljava/lang/String;)V&quot;);</span><br><span class="line">    //调用成员方法，这个时候第一个参数应该是对象</span><br><span class="line">    env-&gt;CallVoidMethod (thiz, method2,result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>以上是借用JNI主动传进来的jobject ，它就代表对应的Java类的对象。然而有时候，我们没有这样的对象引用作为参数，就需要找到Java的对应的构造器获取Java类的一个对象。</p>
-<!-- more -->
-
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">//调用java的静态方法</span><br><span class="line">NIEXPORT void JNICALL callJavaStaticMethod (JNIEnv *env, jclass cls)  </span><br><span class="line">&#123;  </span><br><span class="line">    jclass clazz = NULL;  </span><br><span class="line">    jstring str_arg = NULL;  </span><br><span class="line">    jmethodID mid_static_method;  </span><br><span class="line">    // 1、从classpath路径下搜索ClassMethod这个类，并返回该类的Class对象  </span><br><span class="line">    clazz =(*env)-&gt;FindClass(env,&quot;com/study/jnilearn/ClassMethod&quot;);  </span><br><span class="line">    if (clazz == NULL) &#123;  </span><br><span class="line">        return;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    // 2、从clazz类中查找callStaticMethod方法  </span><br><span class="line">    mid_static_method = (*env)-&gt;GetStaticMethodID(env,clazz,&quot;callStaticMethod&quot;,&quot;(Ljava/lang/String;I)V&quot;);  </span><br><span class="line">    if (mid_static_method == NULL) &#123;  </span><br><span class="line">        printf(&quot;找不到callStaticMethod这个静态方法。&quot;);  </span><br><span class="line">        return;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    // 3、调用clazz类的callStaticMethod静态方法  </span><br><span class="line">    str_arg = (*env)-&gt;NewStringUTF(env,&quot;我是静态方法&quot;);  </span><br><span class="line">    //调用Java的静态方法不需要Java类的对象。后面需要传入参数。</span><br><span class="line">    (*env)-&gt;CallStaticVoidMethod(env,clazz,mid_static_method, str_arg, 100);  </span><br><span class="line">    // 删除局部引用  </span><br><span class="line">    (*env)-&gt;DeleteLocalRef(env,clazz);  </span><br><span class="line">    (*env)-&gt;DeleteLocalRef(env,str_arg);  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">/* </span><br><span class="line"> * 调用java的实例方法 </span><br><span class="line"> */  </span><br><span class="line">JNIEXPORT void JNICALL callJavaInstaceMethod  (JNIEnv *env, jclass cls)  </span><br><span class="line">&#123;  </span><br><span class="line">    jclass clazz = NULL;  </span><br><span class="line">    jobject jobj = NULL;  </span><br><span class="line">    jmethodID mid_construct = NULL;  </span><br><span class="line">    jmethodID mid_instance = NULL;  </span><br><span class="line">    jstring str_arg = NULL;  </span><br><span class="line">    // 1、从classpath路径下搜索ClassMethod这个类，并返回该类的Class对象  </span><br><span class="line">    clazz = (*env)-&gt;FindClass(env, &quot;com/study/jnilearn/ClassMethod&quot;);  </span><br><span class="line">    if (clazz == NULL) &#123;  </span><br><span class="line">        printf(&quot;找不到&#x27;com.study.jnilearn.ClassMethod&#x27;这个类&quot;);  </span><br><span class="line">        return;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    // 2、获取类的默认构造方法ID  ，没有参数</span><br><span class="line">    mid_construct = (*env)-&gt;GetMethodID(env,clazz, &quot;&lt;init&gt;&quot;,&quot;()V&quot;);  </span><br><span class="line">    if (mid_construct == NULL) &#123;  </span><br><span class="line">        printf(&quot;找不到默认的构造方法&quot;);  </span><br><span class="line">        return;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    // 3、查找实例方法的ID  ，第三个参数传入java方法的名称。第四个是方法参数表达式</span><br><span class="line">    mid_instance = (*env)-&gt;GetMethodID(env, clazz, &quot;callInstanceMethod&quot;, &quot;(Ljava/lang/String;I)V&quot;);  </span><br><span class="line">    if (mid_instance == NULL) &#123;  </span><br><span class="line">        return;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    // 4、创建该类的实例  </span><br><span class="line">    jobj = (*env)-&gt;NewObject(env,clazz,mid_construct);  </span><br><span class="line">    if (jobj == NULL) &#123;  </span><br><span class="line">        printf(&quot;在com.study.jnilearn.ClassMethod类中找不到callInstanceMethod方法&quot;);  </span><br><span class="line">        return;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    // 5、调用对象的实例方法  </span><br><span class="line">    str_arg = (*env)-&gt;NewStringUTF(env,&quot;我是实例方法&quot;);  //创建字符串的方法</span><br><span class="line">    (*env)-&gt;CallVoidMethod(env,jobj,mid_instance,str_arg,200);  //调用方法，需要传入参数</span><br><span class="line"></span><br><span class="line">    // 删除局部引用  </span><br><span class="line">    (*env)-&gt;DeleteLocalRef(env,clazz);  </span><br><span class="line">    (*env)-&gt;DeleteLocalRef(env,jobj);  </span><br><span class="line">    (*env)-&gt;DeleteLocalRef(env,str_arg);  </span><br></pre></td></tr></table></figure>
-
-<p>以上在创建Java类的对象的时候，调用的默认的无参数构造器，如果调用的是有参数的构造器，就需要一下写法：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//获取Student的jclass</span><br><span class="line">    jclass  studentClass=env-&gt;FindClass(&quot;com/xxxx/Student&quot;);</span><br><span class="line">    //获取Student的构造方法ID</span><br><span class="line">    jmethodID  studentCont=env-&gt;GetMethodID(studentClass,&quot;&lt;init&gt;&quot;,&quot;(Ljava/lang/String;I)V&quot;);</span><br><span class="line">    //实例化Student并传递参数</span><br><span class="line">    jstring name = env-&gt;NewStringUTF(&quot;JIN 构造方法新建对象 宝强&quot;);</span><br><span class="line">    jint age=30;</span><br><span class="line">    //创建Student的对象，需要传入参数</span><br><span class="line">    jobject student= env-&gt;NewObject(studentClass,studentCont,name,age);</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%BA%8C/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

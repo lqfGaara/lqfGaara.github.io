@@ -22,26 +22,26 @@
 
   <meta property="og:type" content="website">
 <meta property="og:title" content="Alex&#39;s personal blog">
-<meta property="og:url" content="http://example.com/archives/index.html">
+<meta property="og:url" content="http://example.com/page/2/index.html">
 <meta property="og:site_name" content="Alex&#39;s personal blog">
 <meta property="og:locale">
 <meta property="article:author" content="Alex">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/archives/">
+<link rel="canonical" href="http://example.com/page/2/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
+    isHome : true,
     isPost : false,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>Archive | Alex's personal blog</title>
+  <title>Alex's personal blog</title>
   
 
 
@@ -139,233 +139,88 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%BA%8C/">
 
-  
-  
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">Um..! 11 posts in total. Keep on posting.</span>
-      </div>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%BA%8C/" class="post-title-link" itemprop="url">Android JNI开发步骤二（native 调用java 方法）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-05-03 21:08:27" itemprop="dateCreated datePublished" datetime="2021-05-03T21:08:27+08:00">2021-05-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-16 15:06:06" itemprop="dateModified" datetime="2021-09-16T15:06:06+08:00">2021-09-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+          <p>在JNI代码中获取到了我们想要的值，需要返回到Java层，简单的情况下可以使用return某个值来实现。但是复杂情况下，我们需要不断地获取JNI中返回的值，我们就可以在JNI中主动去找Java中的方法，然后调用，并把JNI中的值作为Java方法的参数传入。如下：</p>
+<p>//native方法将调用Java方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT void JNICALL nativeCallJava(JNIEnv *env, jobject thiz)&#123;</span><br><span class="line">    object_global = (jobject)env-&gt;NewGlobalRef(thiz);</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    //先获取JNIEnv</span><br><span class="line">    if (savedVm-&gt;GetEnv(reinterpret_cast&lt;void **&gt;(&amp;env), JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">        env = NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    //再通过FindClass来加载当前需要的类</span><br><span class="line">    jclass clazz = env-&gt;FindClass(&quot;com/XXXX/jni/MainActivity&quot;);</span><br><span class="line">    //获取当前类中的静态方法</span><br><span class="line">    jmethodID method1 = env-&gt;GetStaticMethodID(clazz,&quot;nativeCall&quot;,&quot;(Ljava/lang/String;)V&quot;);</span><br><span class="line">    jstring result = env-&gt;NewStringUTF(&quot;aaaaaaaaa&quot;);//字符串</span><br><span class="line">    env-&gt;CallStaticVoidMethod (clazz, method1,result);//调用静态方法</span><br><span class="line">    //获取普通成员方法</span><br><span class="line">    jmethodID method2 = env-&gt;GetMethodID(clazz,&quot;nativeCall_nonStatic&quot;,&quot;(Ljava/lang/String;)V&quot;);</span><br><span class="line">    //调用成员方法，这个时候第一个参数应该是对象</span><br><span class="line">    env-&gt;CallVoidMethod (thiz, method2,result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上是借用JNI主动传进来的jobject ，它就代表对应的Java类的对象。然而有时候，我们没有这样的对象引用作为参数，就需要找到Java的对应的构造器获取Java类的一个对象。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%BA%8C/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-16T22:17:32+08:00"
-              content="2021-09-16">
-          09-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E5%9B%9B)/" itemprop="url">
-            <span itemprop="name">Java 线程基础、线程之间的共享和协作 (四)</span>
-          </a>
-      </div>
-
-    </header>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
   </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-16T21:12:32+08:00"
-              content="2021-09-16">
-          09-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%89)/" itemprop="url">
-            <span itemprop="name">Java 线程基础、线程之间的共享和协作 (三)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-16T17:16:32+08:00"
-              content="2021-09-16">
-          09-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%BA%8C)/" itemprop="url">
-            <span itemprop="name">Java 线程基础、线程之间的共享和协作 (二)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-16T14:48:32+08:00"
-              content="2021-09-16">
-          09-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/" itemprop="url">
-            <span itemprop="name">Java 线程基础、线程之间的共享和协作 (一)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-09T17:33:54+08:00"
-              content="2021-09-09">
-          09-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" itemprop="url">
-            <span itemprop="name">Java注解和反射与动态代理</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-09T17:31:27+08:00"
-              content="2021-09-09">
-          09-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/09/Java%E6%B3%9B%E5%9E%8B/" itemprop="url">
-            <span itemprop="name">Java泛型</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-09T17:11:13+08:00"
-              content="2021-09-09">
-          09-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/09/Android%E7%BC%96%E8%AF%91%E6%8F%92%E6%A1%A9/" itemprop="url">
-            <span itemprop="name">Android编译插桩</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-09-09T17:11:13+08:00"
-              content="2021-09-09">
-          09-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/09/09/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E5%9B%9B-JNI%E4%B8%AD%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" itemprop="url">
-            <span itemprop="name">Android JNI开发步骤四(JNI内存泄漏)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-05-04T21:32:02+08:00"
-              content="2021-05-04">
-          05-04
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/05/04/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%89-%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%92/" itemprop="url">
-            <span itemprop="name">Android JNI开发步骤三(数据传递)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-05-03T21:57:17+08:00"
-              content="2021-05-03">
-          05-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/" itemprop="url">
-            <span itemprop="name">Android JNI开发步骤一</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-
-    </div>
-  </div>
   
   
   
+
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="extend next" rel="next" href="/archives/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
   </nav>
 
 

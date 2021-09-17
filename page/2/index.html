@@ -145,6 +145,83 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/" class="post-title-link" itemprop="url">Android JNI开发步骤一</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-05-03 21:57:17" itemprop="dateCreated datePublished" datetime="2021-05-03T21:57:17+08:00">2021-05-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-16 15:06:34" itemprop="dateModified" datetime="2021-09-16T15:06:34+08:00">2021-09-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="1-JNI中获取JavaVM和-JNIEnv"><a href="#1-JNI中获取JavaVM和-JNIEnv" class="headerlink" title="1. JNI中获取JavaVM和 JNIEnv"></a>1. JNI中获取JavaVM和 JNIEnv</h4><p>JavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。<br>JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。<br>使用JNI_OnLoad方法，这个方法需要自己实现。如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">jint JNI_OnLoad(JavaVM *vm,void *reserved)&#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 1&quot;);</span><br><span class="line">    JNIEnv *env = NULL;</span><br><span class="line">    int result = -1;</span><br><span class="line">    if (vm-&gt;GetEnv(reinterpret_cast&lt;void **&gt;(&amp;env), JNI_VERSION_1_6) != JNI_OK) &#123;</span><br><span class="line">    LOGE(&quot;JNI_Onload in 2&quot;);</span><br><span class="line">        return JNI_ERR;</span><br><span class="line">    &#125;</span><br><span class="line">    result = register_method(env);//动态注册本地方法</span><br><span class="line">    savedVm = vm;//保存JavaVM ，供其他地方使用。</span><br><span class="line">    LOGE(&quot;JNI_Onload in 3 , result is %d&quot;, result);</span><br><span class="line">    return JNI_VERSION_1_6;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法是在加载相应的.so包的时候，系统主动调用的，即：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">        System.loadLibrary(&quot;native-lib&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这句代码调用时，JNI_OnLoad方法就会被调用。<br>每一个.so文件中，只能包含一个JNI_OnLoad方法，也就是在当前.so包含的文件中，只能有一个.c文件中实现这个JNI_OnLoad方法。<br>如上面的做法，我们可以在头文件中声明extern JavaVM *savedVm;，然后其他文件include这个头文件后，就可以使用这个JavaVM。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%BA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -286,7 +363,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

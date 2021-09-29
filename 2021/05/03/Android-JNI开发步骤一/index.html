@@ -28,8 +28,9 @@
 <meta property="og:description" content="1. JNI中获取JavaVM和 JNIEnvJavaVM是虚拟机在JNI中的表示，一个虚拟机中只有一个JavaVM对象，这个对象是线程共享的。JNIEnv类型是一个指向全部JNI方法的指针。该指针只在创建它的线程有效，不能跨线程传递。多线程无法共享。使用JNI_OnLoad方法，这个方法需要自己实现。如下 12345678910111213jint JNI_OnLoad(JavaVM *vm,v">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-05-03T13:57:17.000Z">
-<meta property="article:modified_time" content="2021-09-29T13:08:30.864Z">
+<meta property="article:modified_time" content="2021-09-29T13:13:24.901Z">
 <meta property="article:author" content="Alex">
+<meta property="article:tag" content="JNI">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2021/05/03/Android-JNI%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E4%B8%80/">
@@ -180,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-29 21:08:30" itemprop="dateModified" datetime="2021-09-29T21:08:30+08:00">2021-09-29</time>
+                <time title="Modified: 2021-09-29 21:13:24" itemprop="dateModified" datetime="2021-09-29T21:13:24+08:00">2021-09-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -188,7 +189,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JNI/" itemprop="url" rel="index"><span itemprop="name">JNI</span></a>
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
                 </span>
             </span>
 
@@ -367,6 +368,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JNI/" rel="tag"># JNI</a>
+          </div>
 
         
 
@@ -461,6 +465,11 @@
             <a href="/categories/">
         <span class="site-state-item-count">1</span>
         <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>

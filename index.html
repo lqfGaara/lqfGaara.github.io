@@ -176,6 +176,87 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/14/Android%20Handler%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="Suffocate for dreams!">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/14/Android%20Handler%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">Android FrameWork  - Handler  解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-10-14 13:34:12" itemprop="dateCreated datePublished" datetime="2021-10-14T13:34:12+08:00">2021-10-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-10-15 18:24:19" itemprop="dateModified" datetime="2021-10-15T18:24:19+08:00">2021-10-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="Handler-生产消费模型"><a href="#Handler-生产消费模型" class="headerlink" title="Handler 生产消费模型"></a>Handler 生产消费模型</h4><p><img src="data:image/png;base64,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" alt="avatar"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/14/Android%20Handler%E8%A7%A3%E6%9E%90/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/07/JVM%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E4%B8%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -987,111 +1068,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Alex">
-      <meta itemprop="description" content="Suffocate for dreams!">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Alex's personal blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" class="post-title-link" itemprop="url">Java注解和反射与动态代理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-09-09 17:33:54" itemprop="dateCreated datePublished" datetime="2021-09-09T17:33:54+08:00">2021-09-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-29 21:17:59" itemprop="dateModified" datetime="2021-09-29T21:17:59+08:00">2021-09-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>##Java  注解和反射与动态代理</p>
-<h4 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h4><blockquote>
-<p>在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 metaannotation（元注解）。一般的，我们在定义自定义注解时，需要指定的元注解有两个 ：<br>在定义注解时，注解类也能够使用其他的注解声明。对注解类型进行注解的注解类，我们称之为 &gt;metaannotation（元注解）。一般的，我们在定义自定义注解时，需要指定的元注解有两个 ：</p>
-</blockquote>
-<blockquote>
-<p><strong>@Target</strong><br>注解标记另一个注解，以限制可以应用注解的 Java 元素类型。目标注解指定以下元素类型之一作为其值：</p>
-<ul>
-<li>ElementType.ANNOTATION_TYPE 可以应用于注解类型。</li>
-<li>ElementType.CONSTRUCTOR 可以应用于构造函数。</li>
-<li> ElementType.FIELD 可以应用于字段或属性。</li>
-<li> ElementType.LOCAL_VARIABLE 可以应用于局部变量。</li>
-<li>ElementType.METHOD 可以应用于方法级注解。</li>
-<li> ElementType.PACKAGE 可以应用于包声明。</li>
-<li> ElementType.PARAMETER 可以应用于方法的参数。</li>
-<li> ElementType.TYPE 可以应用于类的任何元素。</li>
-</ul>
-<p><strong>@Retention</strong><br>注解指定标记注解的存储方式：</p>
-<ul>
-<li>RetentionPolicy.SOURCE - 标记的注解仅保留在源级别中，并被编译器忽略。</li>
-<li>RetentionPolicy.CLASS - 标记的注解在编译时由编译器保留，但 Java 虚拟机(JVM)会忽略。</li>
-<li>RetentionPolicy.RUNTIME - 标记的注解由 JVM 保留，因此运行时环境可以使用它。<br>@Retention 三个值中 SOURCE &lt; CLASS &lt; RUNTIME，即CLASS包含了SOURCE，RUNTIME包含SOURCE、<br>CLASS。下文会介绍他们不同的应用场景。</li>
-</ul>
-</blockquote>
-<p>举个栗子：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// @Target(ElementType.TYPE)//只能在类上标记该注解</span><br><span class="line">@Target(&#123;ElementType.FIELD, ElementType.METHOD&#125;)//只能在属性和方法上标记</span><br><span class="line">@Retention(RetentionPolicy.SOURCE) //注解保留在源码这中</span><br><span class="line">public @interface ViewInject &#123;</span><br><span class="line">    //限制输入的是资源id</span><br><span class="line">    @IdRes int value();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1161,7 +1137,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1172,7 +1148,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

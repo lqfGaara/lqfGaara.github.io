@@ -176,6 +176,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="Suffocate for dreams!">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/" class="post-title-link" itemprop="url">Java 线程基础、线程之间的共享和协作 (一)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-16 14:48:32" itemprop="dateCreated datePublished" datetime="2021-09-16T14:48:32+08:00">2021-09-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-29 21:16:50" itemprop="dateModified" datetime="2021-09-29T21:16:50+08:00">2021-09-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Java-线程基础、线程之间的共享和协作-一"><a href="#Java-线程基础、线程之间的共享和协作-一" class="headerlink" title="Java 线程基础、线程之间的共享和协作 (一)"></a>Java 线程基础、线程之间的共享和协作 (一)</h3><h4 id="什么是进程和线程"><a href="#什么是进程和线程" class="headerlink" title="什么是进程和线程"></a>什么是进程和线程</h4><blockquote>
+<p>进程是程序运行资源分配的最小单位</p>
+</blockquote>
+<blockquote>
+<p>线程是 CPU 调度的最小单位,必须依赖于进程而存在</p>
+</blockquote>
+<h4 id="CPU-核心数和线程数的关系"><a href="#CPU-核心数和线程数的关系" class="headerlink" title="CPU 核心数和线程数的关系"></a>CPU 核心数和线程数的关系</h4><blockquote>
+<p>核心数、线程数:目前主流 CPU 都是多核的。增加核心数目就是为了增加线 程数,因为操作系统是通过线程来执行任务的,一般情况下它们是 1:1 对应关系,也 就是说四核 CPU 一般拥有四个线程。但 Intel 引入超线程技术后,使核心数与线程 数形成 1:2 的关系</p>
+</blockquote>
+<h4 id="CPU-时间片轮转机制"><a href="#CPU-时间片轮转机制" class="headerlink" title="CPU 时间片轮转机制"></a>CPU 时间片轮转机制</h4><blockquote>
+<p>时间片轮转调度是一种最古老、最简单、最公平且使用最广的算法,又称 RR 调度。每个进程被分配一个时间段,称作它的时间片,即该进程允许运行的时间。</p>
+</blockquote>
+<h4 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h4><blockquote>
+<p>并发:指应用能够交替执行不同的任务,比如单 CPU 核心下执行多线程并非是 同时执行多个任务,如果你开两个线程执行,就是在你几乎不可能察觉到的速度不 断去切换这两个任务,已达到”同时执行效果”,其实并不是的,只是计算机的速度太 快,我们无法察觉到而已. </p>
+</blockquote>
+<blockquote>
+<p>并行:指应用能够同时执行不同的任务,例:吃饭的时候可以边吃饭边打电话, 这两件事情可以同时执行 两者区别:一个是交替执行,一个是同时执行.</p>
+</blockquote>
+<blockquote>
+<p><strong>当谈论并发的时候一定要加个单位时间,也就是说单位时间内并发量是多少? 离开了单位时间其实是没有意义的。</strong></p>
+</blockquote>
+<h4 id="高并发编程的意义、好处和注意事项"><a href="#高并发编程的意义、好处和注意事项" class="headerlink" title="高并发编程的意义、好处和注意事项"></a>高并发编程的意义、好处和注意事项</h4><ol>
+<li>充分利用 CPU 的资源</li>
+<li>加快响应用户的时间</li>
+<li>可以使你的代码模块化,异步化,简单化</li>
+</ol>
+<h4 id="多线程程序需要注意事项"><a href="#多线程程序需要注意事项" class="headerlink" title="多线程程序需要注意事项"></a>多线程程序需要注意事项</h4><ol>
+<li>线程之间的安全性</li>
+<li>线程之间的死锁</li>
+<li>线程太多了会将服务器资源耗尽形成死机当机</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/09/Java%E6%B3%A8%E8%A7%A3%E5%92%8C%E5%8F%8D%E5%B0%84%E4%B8%8E%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -941,7 +1052,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -952,7 +1063,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

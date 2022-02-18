@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
+  </script>
+
+  <meta name="description" content="Java 线程基础、线程之间的共享和协作 (一)什么是进程和线程 进程是程序运行资源分配的最小单位   线程是 CPU 调度的最小单位,必须依赖于进程而存在  CPU 核心数和线程数的关系 核心数、线程数:目前主流 CPU 都是多核的。增加核心数目就是为了增加线 程数,因为操作系统是通过线程来执行任务的,一般情况下它们是 1:1 对应关系,也 就是说四核 CPU 一般拥有四个线程。但 Intel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 线程基础、线程之间的共享和协作 (一)">
+<meta property="og:url" content="http://example.com/2019/03/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/index.html">
+<meta property="og:site_name" content="Alex&#39;s personal blog">
+<meta property="og:description" content="Java 线程基础、线程之间的共享和协作 (一)什么是进程和线程 进程是程序运行资源分配的最小单位   线程是 CPU 调度的最小单位,必须依赖于进程而存在  CPU 核心数和线程数的关系 核心数、线程数:目前主流 CPU 都是多核的。增加核心数目就是为了增加线 程数,因为操作系统是通过线程来执行任务的,一般情况下它们是 1:1 对应关系,也 就是说四核 CPU 一般拥有四个线程。但 Intel">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdn.net/20180806181114913?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM5NjM0NjU3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="article:published_time" content="2019-03-16T06:48:32.000Z">
+<meta property="article:modified_time" content="2022-02-18T03:41:52.563Z">
+<meta property="article:author" content="Alex">
+<meta property="article:tag" content="Java多线程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20180806181114913?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM5NjM0NjU3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+
+<link rel="canonical" href="http://example.com/2019/03/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Java 线程基础、线程之间的共享和协作 (一) | Alex's personal blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Alex's personal blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Suffocate for dreams!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/16/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%B8%80)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Alex">
+      <meta itemprop="description" content="Suffocate for dreams!">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex's personal blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 线程基础、线程之间的共享和协作 (一)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-16 14:48:32" itemprop="dateCreated datePublished" datetime="2019-03-16T14:48:32+08:00">2019-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-18 11:41:52" itemprop="dateModified" datetime="2022-02-18T11:41:52+08:00">2022-02-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Java-线程基础、线程之间的共享和协作-一"><a href="#Java-线程基础、线程之间的共享和协作-一" class="headerlink" title="Java 线程基础、线程之间的共享和协作 (一)"></a>Java 线程基础、线程之间的共享和协作 (一)</h3><h4 id="什么是进程和线程"><a href="#什么是进程和线程" class="headerlink" title="什么是进程和线程"></a>什么是进程和线程</h4><blockquote>
+<p>进程是程序运行资源分配的最小单位</p>
+</blockquote>
+<blockquote>
+<p>线程是 CPU 调度的最小单位,必须依赖于进程而存在</p>
+</blockquote>
+<h4 id="CPU-核心数和线程数的关系"><a href="#CPU-核心数和线程数的关系" class="headerlink" title="CPU 核心数和线程数的关系"></a>CPU 核心数和线程数的关系</h4><blockquote>
+<p>核心数、线程数:目前主流 CPU 都是多核的。增加核心数目就是为了增加线 程数,因为操作系统是通过线程来执行任务的,一般情况下它们是 1:1 对应关系,也 就是说四核 CPU 一般拥有四个线程。但 Intel 引入超线程技术后,使核心数与线程 数形成 1:2 的关系</p>
+</blockquote>
+<h4 id="CPU-时间片轮转机制"><a href="#CPU-时间片轮转机制" class="headerlink" title="CPU 时间片轮转机制"></a>CPU 时间片轮转机制</h4><blockquote>
+<p>时间片轮转调度是一种最古老、最简单、最公平且使用最广的算法,又称 RR 调度。每个进程被分配一个时间段,称作它的时间片,即该进程允许运行的时间。</p>
+</blockquote>
+<h4 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h4><blockquote>
+<p>并发:指应用能够交替执行不同的任务,比如单 CPU 核心下执行多线程并非是 同时执行多个任务,如果你开两个线程执行,就是在你几乎不可能察觉到的速度不 断去切换这两个任务,已达到”同时执行效果”,其实并不是的,只是计算机的速度太 快,我们无法察觉到而已. </p>
+</blockquote>
+<blockquote>
+<p>并行:指应用能够同时执行不同的任务,例:吃饭的时候可以边吃饭边打电话, 这两件事情可以同时执行 两者区别:一个是交替执行,一个是同时执行.</p>
+</blockquote>
+<blockquote>
+<p><strong>当谈论并发的时候一定要加个单位时间,也就是说单位时间内并发量是多少? 离开了单位时间其实是没有意义的。</strong></p>
+</blockquote>
+<h4 id="高并发编程的意义、好处和注意事项"><a href="#高并发编程的意义、好处和注意事项" class="headerlink" title="高并发编程的意义、好处和注意事项"></a>高并发编程的意义、好处和注意事项</h4><ol>
+<li>充分利用 CPU 的资源</li>
+<li>加快响应用户的时间</li>
+<li>可以使你的代码模块化,异步化,简单化</li>
+</ol>
+<h4 id="多线程程序需要注意事项"><a href="#多线程程序需要注意事项" class="headerlink" title="多线程程序需要注意事项"></a>多线程程序需要注意事项</h4><ol>
+<li>线程之间的安全性</li>
+<li>线程之间的死锁</li>
+<li>线程太多了会将服务器资源耗尽形成死机当机</li>
+</ol>
+<span id="more"></span>
+
+<h4 id="认识Java里的线程"><a href="#认识Java里的线程" class="headerlink" title="认识Java里的线程"></a>认识Java里的线程</h4><blockquote>
+<p>一个 Java 程序从 main()方法开始执行，然后按照既定的代码逻辑执行，看 似没有其他线程参与，但实际上 Java 程序天生就是多线程程序，因为执行 main() 方法的是一个名称为 main 的线程。<br> [6] Monitor Ctrl-Break //监控 Ctrl-Break 中断信号的<br> [5] Attach Listener //内存 dump，线程 dump，类信息统计，获取系统属性等<br> [4] Signal Dispatcher // 分发处理发送给 JVM 信号的线程<br> [3] Finalizer // 调用对象 finalize 方法的线程<br> [2] Reference Handler//清除 Reference 的线程 [1] main //main 线程，用户程序入口</p>
+</blockquote>
+<h4 id="线程的启动与中止"><a href="#线程的启动与中止" class="headerlink" title="线程的启动与中止"></a>线程的启动与中止</h4><p>启动线程的方式有：</p>
+<ol>
+<li>X extends Thread;，然后 X.start </li>
+<li>X implements Runnable；然后交给 Thread 运行</li>
+</ol>
+<p><strong>Thread 和 Runnable 的区别 Thread 才是 Java 里对线程的唯一抽象，Runnable 只是对任务（业务逻辑） 的抽象。Thread 可以接受任意一个 Runnable 的实例并执行。</strong></p>
+<blockquote>
+<p>可能有人会说还有<strong>Callable</strong>，Callable与Runnable的功能大致相似，Callable中有一个call()函数，但是call()函数有返回值，而Runnable的run()函数不能将结果返回给客户程序。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> public interface Runnable &#123;</span><br><span class="line">    /*</span><br><span class="line">     * @see     java.lang.Thread#run()</span><br><span class="line">     */</span><br><span class="line">    public abstract void run();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public interface Callable&lt;V&gt; &#123;</span><br><span class="line">    /**</span><br><span class="line">     * Computes a result, or throws an exception if unable to do so.</span><br><span class="line">     *</span><br><span class="line">     * @return computed result</span><br><span class="line">     * @throws Exception if unable to compute a result</span><br><span class="line">     */</span><br><span class="line">    V call() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>可以看到，这是一个泛型接口，call()函数返回的类型就是客户程序传递进来的V类型。</strong></p>
+<p><img src="https://img-blog.csdn.net/20180806181114913?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM5NjM0NjU3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="enter image description here"></p>
+<p><strong>因此FutureTask是Future也是Runnable，又是包装了的Callable( 如果是Runnable最终也会被转换为Callable )。</strong></p>
+<p><strong>Callable 和 Future接口的区别：</strong></p>
+<ul>
+<li> Callable规定的方法是call()，而Runnable规定的方法是run(). </li>
+<li> Callable的任务执行后可返回值，而Runnable的任务是不能返回值的。  </li>
+<li> call()方法可抛出异常，而run()方法是不能抛出异常的。 </li>
+<li> 运行Callable任务可拿到一个Future对象， Future表示异步计算的结果。 </li>
+<li> 它提供了检查计算是否完成的方法，以等待计算的完成，并检索计算的结果。 </li>
+<li> 通过Future对象可了解任务执行情况，可取消任务的执行，还可获取任务执行的结果。 </li>
+<li> Callable是类似于Runnable的接口，实现Callable接口的类和实现Runnable的类都是可被其它线程执行的任务。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FutureTask&lt;Integer&gt; result = new FutureTask&lt;Integer&gt;(new Callable&lt;Integer&gt;() &#123;</span><br><span class="line">				public Integer call() throws Exception &#123;</span><br><span class="line">					return 1;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">			new Thread(result).start();</span><br><span class="line">**最终还是被归类为Runable类**</span><br></pre></td></tr></table></figure>
+
+<p>FutureTask实现Runnable，所以能通过Thread包装执行，<br>FutureTask实现Runnable，所以能通过提交给ExcecuteService来执行</p>
+<h4 id="线程中止"><a href="#线程中止" class="headerlink" title="线程中止"></a>线程中止</h4><h5 id="线程自然终止"><a href="#线程自然终止" class="headerlink" title="线程自然终止"></a>线程自然终止</h5><blockquote>
+<p>要么是 run 执行完成了，要么是抛出了一个未处理的异常导致线程提前结束。<br>暂停、恢复和停止操作对应在线程 Thread 的 API 就是 suspend()、resume() 和 stop()。但是这些 API 是过期的，也就是不建议使用的。</p>
+</blockquote>
+<p>#####Thread中 stop(),suspend()函数不建议使用的原因:</p>
+<blockquote>
+<p>以 suspend()方法为例，在调用后，线程不会释放已经占有的资源（比如 锁），而是占有着资源进入睡眠状态，这样容易引发死锁问题。同样，stop()方 法在终结一个线程时不会保证线程的资源正常释放，通常是没有给予线程完成资 源释放工作的机会，因此会导致程序可能工作在不确定状态下.</p>
+</blockquote>
+<h5 id="人为中断"><a href="#人为中断" class="headerlink" title="人为中断"></a>人为中断</h5><blockquote>
+<p>安全的中止则是其他线程通过调用某个线程 A 的 interrupt()方法对其进行中 断操作.不代表线程A会立即停止自己的工作，同样的 A 线程完全可以不理会这种中断请求。 因为 java 里的线程是协作式的，不是抢占式的。线程通过检查自身的中断标志位是否被置为 true 来进行响应.</p>
+</blockquote>
+<blockquote>
+<p>线程通过方法 isInterrupted()来进行判断是否被中断，也可以调用静态方法 Thread.interrupted()来进行判断当前线程是否被中断，不过 Thread.interrupted() 会同时将中断标识位改写为 false。</p>
+</blockquote>
+<blockquote>
+<p>如果一个线程处于了阻塞状态（如线程调用了 thread.sleep、thread.join、 thread.wait 等），则在线程在检查中断标示时如果发现中断标示为 true，则会在 这些阻塞方法调用处抛出 InterruptedException 异常，并且在抛出异常后会立即 将线程的中断标示位清除，即重新设置为 false。</p>
+</blockquote>
+<p><strong>不建议自定义一个取消标志位来中止线程的运行。因为 run 方法里有阻塞调 用时会无法很快检测到取消标志，线程必须从阻塞调用返回后,才会检查这个取消标志</strong>。<br>这种情况下，使用中断会更好，因为</p>
+<blockquote>
+<ol>
+<li>一般的阻塞方法，如 sleep 等本身就支持中断的检查，</li>
+<li>检查中断位的状态和检查取消标志位没什么区别，用中断位的状态还可 以避免声明取消标志位，减少资源的消耗。</li>
+</ol>
+<p><strong>注意：处于死锁状态的线程无法被中断</strong></p>
+</blockquote>
+<h4 id="深入理解-run-和-start"><a href="#深入理解-run-和-start" class="headerlink" title="深入理解 run()和 start()"></a>深入理解 run()和 start()</h4><blockquote>
+<p>Thread类是Java里对线程概念的抽象，可以这样理解：我们通过new Thread() 其实只是 new 出一个 Thread 的实例，还没有操作系统中真正的线程挂起钩来。 只有执行了 start()方法后，才实现了真正意义上的启动线程。<br>**start()<strong>方法让一个线程进入就绪队列等待分配 cpu，分到 cpu 后才调用实现 的 run()方法，start()方法不能重复调用，如果重复调用会抛出异常。<br>而</strong>run()**方法是业务逻辑实现的地方，本质上和任意一个类的任意一个成员方 法并没有任何区别，可以重复执行，也可以被单独调用。</p>
+</blockquote>
+<h4 id="其他的线程相关方法"><a href="#其他的线程相关方法" class="headerlink" title="其他的线程相关方法"></a>其他的线程相关方法</h4><blockquote>
+<p>**yield()**方法：使当前线程让出 CPU 占有权，但让出的时间是不可设定的。也不会释放锁资源。<br>注意：并不是每个线程都需要这个锁的，而且执行 yield( )的线 程不一定就会持有锁，我们完全可以在释放锁后再调用 yield 方法。 所有执行 yield()的线程有可能在进入到就绪状态后会被操作系统再次选中 马上又被执行。</p>
+</blockquote>
+<blockquote>
+<p>**join()**方法 把指定的线程加入到当前线程，可以将两个交替执行的线程合并为顺序执行。 比如在线程 B 中调用了线程 A 的 Join()方法，直到线程 A 执行完毕后，才会继续 执行线程 B。(此处为常见面试考点)</p>
+</blockquote>
+<pre><code>Thread threadA=new Thread(new Runnable() &#123;
+    @Override
+    public void run() &#123;
+        Log.e(&quot;TAG&quot;,&quot;threadA&quot;);
+
+    &#125;
+&#125;);
+Thread threadB=new Thread(new Runnable() &#123;
+    @Override
+    public void run() &#123;
+        try &#123;
+            threadA.join();
+        &#125; catch (InterruptedException e) &#123;
+            e.printStackTrace();
+        &#125;
+        Log.e(&quot;TAG&quot;,&quot;threadB&quot;);
+    &#125;
+&#125;);
+Thread threadC=new Thread(new Runnable() &#123;
+    @Override
+    public void run() &#123;
+        try &#123;
+            threadB.join();
+        &#125; catch (InterruptedException e) &#123;
+            e.printStackTrace();
+        &#125;
+        Log.e(&quot;TAG&quot;,&quot;threadC&quot;);
+    &#125;
+&#125;);
+
+  *线程的执行顺序是 A-&gt;B-&gt;C
+</code></pre>
+<h4 id="线程的优先级"><a href="#线程的优先级" class="headerlink" title="线程的优先级"></a>线程的优先级</h4><blockquote>
+<p>在 Java 线程中，通过一个整型成员变量 priority 来控制优先级，优先级的范 围从 1~10，在线程构建的时候可以通过 setPriority(int)方法来修改优先级，默认 优先级是 5，优先级高的线程分配时间片的数量要多于优先级低的线程。</p>
+</blockquote>
+<h4 id="守护线程"><a href="#守护线程" class="headerlink" title="守护线程"></a>守护线程</h4><blockquote>
+<p>Daemon（守护）线程是一种支持型线程，因为它主要被用作程序中后台调 度以及支持性工作。这意味着，当一个 Java 虚拟机中不存在非 Daemon 线程的 时候，Java 虚拟机将会退出。可以通过调用 Thread.setDaemon(true)将线程设置 为 Daemon 线程。我们一般用不上，比如垃圾回收线程就是 Daemon 线程。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># Java多线程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/11/09/Java%E6%B3%9B%E5%9E%8B/" rel="prev" title="Java泛型">
+      <i class="fa fa-chevron-left"></i> Java泛型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/17/Java%20%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C%20(%E4%BA%8C)/" rel="next" title="Java 线程基础、线程之间的共享和协作 (二)">
+      Java 线程基础、线程之间的共享和协作 (二) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B1%E4%BA%AB%E5%92%8C%E5%8D%8F%E4%BD%9C-%E4%B8%80"><span class="nav-number">1.</span> <span class="nav-text">Java 线程基础、线程之间的共享和协作 (一)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">什么是进程和线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CPU-%E6%A0%B8%E5%BF%83%E6%95%B0%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%95%B0%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.2.</span> <span class="nav-text">CPU 核心数和线程数的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CPU-%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC%E6%9C%BA%E5%88%B6"><span class="nav-number">1.3.</span> <span class="nav-text">CPU 时间片轮转机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B6%E8%A1%8C%E5%92%8C%E5%B9%B6%E5%8F%91"><span class="nav-number">1.4.</span> <span class="nav-text">并行和并发</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E6%84%8F%E4%B9%89%E3%80%81%E5%A5%BD%E5%A4%84%E5%92%8C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.5.</span> <span class="nav-text">高并发编程的意义、好处和注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%A8%8B%E5%BA%8F%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">多线程程序需要注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A4%E8%AF%86Java%E9%87%8C%E7%9A%84%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.7.</span> <span class="nav-text">认识Java里的线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E4%B8%8E%E4%B8%AD%E6%AD%A2"><span class="nav-number">1.8.</span> <span class="nav-text">线程的启动与中止</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E4%B8%AD%E6%AD%A2"><span class="nav-number">1.9.</span> <span class="nav-text">线程中止</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E8%87%AA%E7%84%B6%E7%BB%88%E6%AD%A2"><span class="nav-number">1.9.1.</span> <span class="nav-text">线程自然终止</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%BA%E4%B8%BA%E4%B8%AD%E6%96%AD"><span class="nav-number">1.9.2.</span> <span class="nav-text">人为中断</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-run-%E5%92%8C-start"><span class="nav-number">1.10.</span> <span class="nav-text">深入理解 run()和 start()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%9A%84%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95"><span class="nav-number">1.11.</span> <span class="nav-text">其他的线程相关方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">1.12.</span> <span class="nav-text">线程的优先级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%88%E6%8A%A4%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.13.</span> <span class="nav-text">守护线程</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Alex</p>
+  <div class="site-description" itemprop="description">Suffocate for dreams!</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luoqingfeng5918@163.com" title="E-Mail → luoqingfeng5918@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alex</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
